@@ -49,5 +49,34 @@ const addUser = async(req,res)=>{
 
 }
 
+const getUser = async(req,res)=>{
+    try{
+         let users = await UserModel.find({})
 
-module.exports = addUser
+         if(users.length != 0)
+         {
+            return res.status(200).json({
+                mssg:"add Success",
+                status:200,
+                users
+    
+            })
+         }
+
+        
+    }
+    catch(err)
+    {
+        console.log(err)
+        return res.status(500).json({
+            mssg:"server error",
+            status:500,
+            err:JSON.stringify(err)
+
+        })
+    }
+
+}
+
+
+module.exports = {addUser,getUser}

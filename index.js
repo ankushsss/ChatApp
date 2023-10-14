@@ -1,7 +1,13 @@
 let express = require("express")
 let mongoose = require("mongoose")
+let userRouter = require("./src/Routes/userRoutes")
+let messageRouter = require("./src/Routes/messagesRoutes")
+
 let app = express()
+
+
 app.use(express.json())
+
  
 
 let port = 3000
@@ -17,8 +23,10 @@ mongoose.connect("mongodb+srv://abjushsaxena90:ankush123@cluster0.37q9k6c.mongod
 let UserModel = require("./src/models/userModel")
 let addUser = require("./src/controler/userControler")
 
-app.post("/addUser",addUser)
 // app.get("/addUser",getUser)
+
+app.use("/",userRouter)
+app.use("/message",messageRouter)
 
 
 

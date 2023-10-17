@@ -1,40 +1,22 @@
 const UserModel = require("../models/userModel")
+const bcrypt = require("bcrypt")
 
 const addUser = async(req,res)=>{
     try{
-        console.log(req.body)
-        let email = req.body.email.toLowerCase()
-        console.log(req.body.email.includes("@"))
-        console.log(req.body.mobileNumber.length == 10)
-
-        if(req.body.email.includes("@"))
-        {
-          let user = new UserModel(req.body)
-          let isSave = await user.save()
-
-          if(isSave)
-          {
-           return res.status(200).json({
-                mssg:"user add successfully",
-                status:200,
-                isSave
-            })
-          }
-
-          else{
-            return res.status(400).json({
-                mssg:"something is wrong ",
-                status:400,
-
-            })
-          }
-        }
-        else{
-            return res.status(400).json({
-                mssg:"email is required"
-            })
-
-        }
+        bcrypt.hash(req.body.password,10,async(err, hashPassword)=>{
+            let user = new UserModel({...req.body,password:hashPassword})
+            let isSave = await user.save()
+  
+            if(isSave)
+            {
+             return res.status(200).json({
+                  mssg:"user add successfully",
+                  status:200,
+                  isSave
+              })
+            }
+          })
+         
     }
     catch(err)
     {
@@ -78,5 +60,49 @@ const getUser = async(req,res)=>{
 
 }
 
+const login = async(req,res)=>{
+    try
+    {
+        let {email,password} = req.body
+        let users = await UserModel.find({email:email})
+        console.log(users)
+        if(users.length == 0)
+        {
+            return res.status(400).json({
+                status:400,
+                mssg:"user not found"
+            })
+        }
+        else{
+             bcrypt.compare(req.body.password,users[0].password,(err,result)=>{
 
-module.exports = {addUser,getUser}
+                if(result == true)
+                {
+                    return res.status(200).json({
+                        status:200,
+                        mssg:"user login success"
+                    }) 
+                }
+                else
+                {
+                    return res.status(400).json({
+                        status:400,
+                        mssg:"incorrect email and password"
+                    }) 
+                }
+             })
+        }
+
+    }
+    catch(err){
+        console.log(err)
+        res.status(500).json({
+            status:500,
+            message:"server error",
+            err:JSON.stringify(err)
+        })
+    }
+}
+
+
+module.exports = {addUser,getUser,login}

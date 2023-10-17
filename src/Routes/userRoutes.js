@@ -6,6 +6,8 @@ console.log(addUserPage)
 
 router.post("/addUser",addUserPage.addUser)
 router.get("/getUser",addUserPage.getUser)
+router.post("/login",addUserPage.login)
+
 
 
 
